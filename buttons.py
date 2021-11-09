@@ -41,7 +41,7 @@ numeros_str = [uno,dos,tres,cuatro,cinco,seis,siete,ocho,nueve,diez]
 
 # PORTAVIONES (5 CUADROS)
 portaviones= pg.image.load("portaviones.png").convert()
-portaviones_rect = pg.Rect(40,600, portaviones.get_width(), (portaviones.get_height()+ cinco.get_height()))
+#portaviones_rect = pg.Rect(40,600, portaviones.get_width(), (portaviones.get_height()+ cinco.get_height()))
 
 # BUQUE (4 CUADROS)
 buque= pg.image.load("buque.png").convert()
@@ -59,5 +59,6 @@ crucero_rect = pg.Rect(430,600, crucero.get_width(), (crucero.get_height() + dos
 lancha= pg.image.load("lancha.png").convert()
 lancha_rect = pg.Rect(560,600, lancha.get_width(), (lancha.get_height() + uno.get_height()))
 
+dic_buttons={5:pg.Rect(40,600, portaviones.get_width(), (portaviones.get_height()+ cinco.get_height())), 4:buque_rect, 3:submarino_rect, 2:crucero_rect, 1:lancha_rect}
 
 pg.quit()

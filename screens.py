@@ -107,7 +107,7 @@ def ship_pos_screen (): #pantalla donde se posicionan los barcos
 	pg.init()
 
 	screen = pg.display.set_mode((700,700))
-	board = ships.Board() #cuadricula, objeto de la clase Board
+	board = ships.Board(100,600) #cuadricula, objeto de la clase Board
 
 	screen.fill((0,0,255))
 
@@ -134,21 +134,39 @@ def ship_pos_screen (): #pantalla donde se posicionan los barcos
 					y tiene (73 - bt.numeros_str[i].get_height()/2) para que cada numero quede centrado verticalmente con la casilla'''
 
 	def crear_barco(lenght, a, direccion=0): #para crear barcos, a es el indice de la caja en la que da click
+			
 		if board.boxes[a].ship == 1: #si la caja esta ocupada
 			pg.draw.rect(screen, (0,255,0), [board.boxes[a].cxy[0], board.boxes[a].cxy[1], 48, 48], 0) #se dibuja un cuadro verde
 			pass
 		else: #si la caja no esta ocupada
-			ship = ships.Ship(a, lenght, direccion) #se crea un barco
-			if direccion==0: #si el barco esta posicionado verticalmente
-				for k in range(lenght):
-					board.boxes[a+k].ship=1 #se cambia el estado de las k cajas consecutivas verticales
-					pg.draw.rect(screen, (0,255,0), [board.boxes[a+k].cxy[0], board.boxes[a+k].cxy[1], 48, 48], 0) #se dibuja un cuadro verde
-			else:
-				for k in range(lenght):
-					board.boxes[a+(10*k)].ship=1 #se cambia el estado de las k cajas consecutivas horizontales (10*k porque los indices de las cajas estan en orden vertical, se necesita multiplicar por 10 para cambiar de fila)
-					pg.draw.rect(screen, (0,255,0), [board.boxes[a+10*k].cxy[0], board.boxes[a+10*k].cxy[1], 48, 48], 0) #se dibuja un cuadro verde
+			try:
+				if direccion == 0:
+					for k in range(lenght):
+						if board.boxes[a+k].ship==1:
+							error_barco = ValueError("No se puede poner un barco encima de otro")
+							raise error_barco
+				else:
+					for k in range(lenght):
+						if board.boxes[a+(10*k)].ship == 1:
+							error_barco = ValueError("No se puede poner un barco encima de otro")
+							raise error_barco
 
-			print(ship) #no es necesario, pero para verificar que la longitud y direccion del barco estan bien
+				ship = ships.Ship(a, lenght, direccion) #se crea un barco
+				if direccion==0: #si el barco esta posicionado verticalmente
+					for k in range(lenght):
+						board.boxes[a+k].ship=1 #se cambia el estado de las k cajas consecutivas verticales
+						pg.draw.rect(screen, (0,255,0), [board.boxes[a+k].cxy[0], board.boxes[a+k].cxy[1], 48, 48], 0) #se dibuja un cuadro verde
+				else:
+					for k in range(lenght):
+						board.boxes[a+(10*k)].ship=1 #se cambia el estado de las k cajas consecutivas horizontales (10*k porque los indices de las cajas estan en orden vertical, se necesita multiplicar por 10 para cambiar de fila)
+						pg.draw.rect(screen, (0,255,0), [board.boxes[a+10*k].cxy[0], board.boxes[a+10*k].cxy[1], 48, 48], 0) #se dibuja un cuadro verde
+					
+				print(ship) #no es necesario, pero para verificar que la longitud y direccion del barco estan bien
+
+			except (ValueError, IndexError):
+				print ("No se puede poner el barco")
+				pass
+		del bt.dic_buttons[lenght]
 
 	while True:
 		event = pg.event.poll()
@@ -157,29 +175,44 @@ def ship_pos_screen (): #pantalla donde se posicionan los barcos
 
 		if event.type == pg.MOUSEBUTTONDOWN and event.button == 1: #para crear barcos verticales
 
-			if bt.portaviones_rect.collidepoint(pg.mouse.get_pos()): #si hay click en el portaviones
-				print("portaviones")
-				lenght=5
-			if bt.buque_rect.collidepoint(pg.mouse.get_pos()): #si hay click en el buque
-				print("buque")
-				lenght=4
-			if bt.submarino_rect.collidepoint(pg.mouse.get_pos()): #si hay click en el submarino
-				print("submarino")
-				lenght=3
-			if bt.crucero_rect.collidepoint(pg.mouse.get_pos()): #si hay click en el crucero
-				print("crucero")
-				lenght=2
-			if bt.lancha_rect.collidepoint(pg.mouse.get_pos()): #si hay click en el lancha
-				print("lancha")
-				lenght=1
+			try:
+				if bt.dic_buttons[5].collidepoint(pg.mouse.get_pos()): #si hay click en el portaviones
+					print("portaviones")
+					lenght=5
+				if bt.dic_buttons[4].collidepoint(pg.mouse.get_pos()): #si hay click en el buque
+					print("buque")
+					lenght=4
+				if bt.dic_buttons[3].collidepoint(pg.mouse.get_pos()): #si hay click en el submarino
+					print("submarino")
+					lenght=3
+				if bt.dic_buttons[2].collidepoint(pg.mouse.get_pos()): #si hay click en el crucero
+					print("crucero")
+					lenght=2
+				if bt.dic_buttons[1].collidepoint(pg.mouse.get_pos()): #si hay click en el lancha
+					print("lancha")
+					lenght=1
 
-			for i in board.boxes:
-				i.accion_click_position(crear_barco, lenght, board, i, event)
+			except:
+				pass
+
+			try:
+				for i in board.boxes:
+					i.accion_click_position(crear_barco, lenght, board, i, event)
+
+			except UnboundLocalError:
+				print("Seleccione un barco para posicionar")
+				pass
+
+			except KeyError:
+				pass
 
 		if event.type == pg.MOUSEBUTTONDOWN and event.button == 3: #para crear barcos horizontales
 
-			for i in board.boxes:
-				i.accion_click_position(crear_barco, lenght, board, i, event)
+			try:
+				for i in board.boxes:
+					i.accion_click_position(crear_barco, lenght, board, i, event)
+			except KeyError:
+				pass
 
 		# ----- se imprimen las imagenes de los barcos -----
 		screen.blit(bt.portaviones, [40,600])
@@ -197,6 +230,7 @@ def ship_pos_screen (): #pantalla donde se posicionan los barcos
 
 		pg.display.flip()
 
+	return board
 	pg.quit()
 
 def game_screen (): #pantalla de juego
@@ -205,6 +239,21 @@ def game_screen (): #pantalla de juego
 
 	screen = pg.display.set_mode((1400,700))
 
+	player1 = ship_pos_screen()
+#	player2 = ship_pos_screen()
+#	player2.move_player2()
+	score1 = 0
+#	score2 = 0
+
+	def disparo (board, indice_caja, score):
+		caja_select=board.boxes[indice_caja]
+		caja_select.shoot=1
+		if caja_select.ship==1:
+			pg.draw.rect(screen, (255,0,0), [caja_select.cxy[0],caja_select.cxy[1],48,48])
+			score+=1
+		else:
+			pg.draw.rect(screen, (255,255,255), [caja_select.cxy[0],caja_select.cxy[1],48,48])
+
 	while True:
 		event = pg.event.poll()
 		if event.type == pg.QUIT:
@@ -212,7 +261,7 @@ def game_screen (): #pantalla de juego
 
 		screen.fill((0,0,255))
 
-		# ----- CUADRICULA JUGADOR-----
+		# ----- CUADRICULA JUGADOR 1-----
 
 		pg.draw.rect(screen, (0,0,0), [98,48,502,502]) 
 
@@ -238,7 +287,7 @@ def game_screen (): #pantalla de juego
 		screen.blit(bt.dos, [480-(bt.dos.get_width()/2),650])
 		screen.blit(bt.uno, [610-(bt.uno.get_width()/2),650])
 
-		# ----- CUADRICULA PC -----
+		# ----- CUADRICULA JUGADOR 2 -----
 
 		pg.draw.rect(screen, (0,0,0), [798,48,502,502]) 
 
@@ -264,6 +313,13 @@ def game_screen (): #pantalla de juego
 		screen.blit(bt.dos, [1180-(bt.dos.get_width()/2),650])
 		screen.blit(bt.uno, [1310-(bt.uno.get_width()/2),650])
 
+		while score1<15: #and score2<15:
+			for i in player1.boxes:
+				i.accion_click_disparo(disparo, player1, score1, i, event)
+
+#			for i in player2.boxes:
+#				i.accion_click_disparo(disparo, player2, score2, i, event)
+
 		pg.display.flip()
 
 	pg.quit()
@@ -271,5 +327,5 @@ def game_screen (): #pantalla de juego
 #start_screen()     #para probar la pantalla de inicio
 #winner_screen()    #para probar la pantalla de ganador
 #loser_screen()     #para probar la pantalla de perdedor
-ship_pos_screen()  #para probar la pantalla de posicionamiento de barcos
+#ship_pos_screen()  #para probar la pantalla de posicionamiento de barcos
 #game_screen()		#para probar la pantalla de juego
