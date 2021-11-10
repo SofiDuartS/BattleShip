@@ -6,7 +6,8 @@ pg.init()
 screen=pg.display.set_mode((700,700))
 
 buttons_font = pg.font.Font("SKCuber-Expanded.ttf", 50) #se crea la fuente de los botones
-ships_font = pg.font.Font("SKCuber-Expanded.ttf", 15)	
+ships_font = pg.font.Font("SKCuber-Expanded.ttf", 15) #fuente para cantidad de casillas de cada barco
+boards_font = pg.font.Font("SKCuber-Expanded.ttf", 30) #fuente para indicadores de tablero en pantalla de juego
 
 #-----------------BOTON START INICIO------------------------
 start = buttons_font.render("START", True, (255,255,255)) #se crea el texto para el boton de inicio, ("texto", suavizado_de_texto, color_rgb)
@@ -41,7 +42,7 @@ numeros_str = [uno,dos,tres,cuatro,cinco,seis,siete,ocho,nueve,diez]
 
 # PORTAVIONES (5 CUADROS)
 portaviones= pg.image.load("portaviones.png").convert()
-#portaviones_rect = pg.Rect(40,600, portaviones.get_width(), (portaviones.get_height()+ cinco.get_height()))
+portaviones_rect = pg.Rect(40,600, portaviones.get_width(), (portaviones.get_height()+ cinco.get_height()))
 
 # BUQUE (4 CUADROS)
 buque= pg.image.load("buque.png").convert()
@@ -59,6 +60,12 @@ crucero_rect = pg.Rect(430,600, crucero.get_width(), (crucero.get_height() + dos
 lancha= pg.image.load("lancha.png").convert()
 lancha_rect = pg.Rect(560,600, lancha.get_width(), (lancha.get_height() + uno.get_height()))
 
-dic_buttons={5:pg.Rect(40,600, portaviones.get_width(), (portaviones.get_height()+ cinco.get_height())), 4:buque_rect, 3:submarino_rect, 2:crucero_rect, 1:lancha_rect}
+
+# DICCIONARIO PARA LOS BOTONES
+dic_buttons={5:portaviones_rect, 4:buque_rect, 3:submarino_rect, 2:crucero_rect, 1:lancha_rect}
+
+# TEXTO PARA PANTALLA DE JUEGO
+jugador1 = boards_font.render("Tablero jugador 1", True, (255,255,255))
+jugador2 = boards_font.render("Tablero jugador 2", True, (255,255,255))
 
 pg.quit()
