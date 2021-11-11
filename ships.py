@@ -16,11 +16,11 @@ class Box: #clase para un cuadro de la cuadrícula de juego (es un boton)
 	def accion_click_position (self, funcion, lenght, board, i, event): #board, event, i para que no haya error de declaracion de variables en la funcion
 		if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
 			if self.rect.collidepoint(pg.mouse.get_pos()):
-				funcion(lenght, board.boxes.index(i), 0) #board.boxes.index(i) para acceder al indice de la caja en la que se esta dando click, 0 para direccion vertical
+				funcion(board.boxes.index(i), lenght, 0) #board.boxes.index(i) para acceder al indice de la caja en la que se esta dando click, 0 para direccion vertical
 
 		if event.type == pg.MOUSEBUTTONDOWN and event.button == 3:
 			if self.rect.collidepoint(pg.mouse.get_pos()):
-				funcion(lenght, board.boxes.index(i), 1) #board.boxes.index(i) para acceder al indice de la caja en la que se esta dando click, 1 para direccion horizontal
+				funcion(board.boxes.index(i), lenght, 1) #board.boxes.index(i) para acceder al indice de la caja en la que se esta dando click, 1 para direccion horizontal
 
 	def accion_click_disparo (self, funcion, board, i, event): #board, event, i para que no haya error de declaracion de variables en la funcion
 		if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:

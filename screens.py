@@ -112,10 +112,11 @@ def ship_pos_screen(nombre_pantalla): #pantalla donde se posicionan los barcos, 
 	botones = bt.dic_buttons.copy() #se crea un "clon" del diccionario del modulo buttons para que se modifique solo la copia y no el diccionario original(...)
 	'''cuando no hacíamos una copia sino que declarabamos botones = bt.dic_buttons se modificaba el diccionario original, haciendo que no se pudiera ejecutar 
 		ship_pos_screen() más de una vez, lo que es necesario para poder almacenar las ubicaciones de los barcos de más de un jugador'''
-
 	screen.fill((0,0,255))
 
 	pg.draw.rect(screen, (0,0,0), [98,48,502,502]) #para que se vea un marco negro de 2px al rededor de la cuadricula
+
+	screen.blit(bt.nextb, [620, 500]) #para boton next de terminacion de ubicacion
 
 	for i in range(100,600,50): #ciclo que itera para x
 		for j in range(50,550,50): #ciclo que itera para y
@@ -151,8 +152,7 @@ def ship_pos_screen(nombre_pantalla): #pantalla donde se posicionan los barcos, 
 		screen.blit(bt.dos, [480-(bt.dos.get_width()/2),650])
 		screen.blit(bt.uno, [610-(bt.uno.get_width()/2),650])
 
-	def crear_barco(lenght, a, direccion=0): #para crear barcos, a es el indice de la caja en la que da click
-			
+	def crear_barco(a, lenght, direccion=0): #para crear barcos, a es el indice de la caja en la que da click
 		if board.boxes[a].ship == 1: #si la caja esta ocupada
 			pg.draw.rect(screen, (0,255,0), [board.boxes[a].cxy[0], board.boxes[a].cxy[1], 48, 48], 0) #se dibuja un cuadro verde
 			pass
@@ -160,13 +160,18 @@ def ship_pos_screen(nombre_pantalla): #pantalla donde se posicionan los barcos, 
 			try: # para manejo de errores
 				if direccion == 0: #si el barco se quiere posicionar verticalmente
 					for k in range(lenght): #se itera dentro del rango de la longitud del barco
+						division = a//10
 						if board.boxes[a+k].ship==1: #si alguna de las casillas en las que se debería situar el barco esta ocupada
-							error_barco = ValueError("No se puede poner un barco encima de otro") #se crea el error error_barco que indica que el espacio no está disponible porque no se puede poner un barco encima de otro
+							error_barco = ValueError("No se puede poner el barco") #se crea el error error_barco que indica que el espacio no está disponible
 							raise error_barco #se "levanta" el error creado
+						if (a+k)//10 != division: #si alguna de las casillas en las que se debería situar el barco está en otra fila (no hay suficiente espacio vertical para poner el barco)
+							error_barco =ValueError("No se puede poner el barco") #se crea el error error_barco que indica que el espacio no está disponible
+							raise error_barco #se "levanta" el error creado
+
 				else: #si el barco se quiere posicionar horizontalmente
 					for k in range(lenght): #se itera dentro del rango de la longitud del barco
 						if board.boxes[a+(10*k)].ship == 1: #si alguna de las casillas en las que se debería situar el barco esta ocupada, a+(10*k) para que acceda a las casillas consecutivas hacia la derecha
-							error_barco = ValueError("No se puede poner un barco encima de otro") #se crea el mismo error anterior
+							error_barco = ValueError("No se puede poner el barco") #se crea el mismo error anterior
 							raise error_barco #se "levanta" el error
 
 				#si ninguna de las dos pasa, continua con la ejecucion
@@ -181,11 +186,11 @@ def ship_pos_screen(nombre_pantalla): #pantalla donde se posicionan los barcos, 
 						pg.draw.rect(screen, (0,255,0), [board.boxes[a+10*k].cxy[0], board.boxes[a+10*k].cxy[1], 48, 48], 0) #se dibuja un cuadro verde
 
 			except (ValueError, IndexError): #ValueError para el error que creamos, IndexError para cuando se intenta posicionar un barco de mayor longitud a las casillas disponibles en la pantalla
-				print ("No se puede poner el barco")
+				print ("No se puede posicionar el barco")
 				pass
-		del botones[lenght] #se elimina el rectangulo que le da funcionamiento al boton correspondiente para elegir la longitud del barco
-
-		#Nota: para que el programa funcione bien, se deben posicionar los barcos en orden ascendente de cuadros, es decir, del 1 al 5	
+		botones[lenght]=pg.Rect(0,0,0,0) #se elimina el rectangulo que le da funcionamiento al boton correspondiente para elegir la longitud del barco
+		#Nota: ya no es necesario posicionar los barcos en orden ascendente de cuadros, es decir, del 1 al 5 por modificacion
+		lenght=0
 
 	while True:
 		event = pg.event.poll()
@@ -193,6 +198,8 @@ def ship_pos_screen(nombre_pantalla): #pantalla donde se posicionan los barcos, 
 			break
 
 		if event.type == pg.MOUSEBUTTONDOWN and event.button == 1: #para crear barcos verticales, se da click en el boton izquierdo del mouse
+			if bt.nextb_rect.collidepoint(pg.mouse.get_pos()): #cuando se da click en el rectangulo del boton next, se cierra la pantalla
+				break
 
 			try: #para manejo de errores
 				if botones[5].collidepoint(pg.mouse.get_pos()): #si hay click en el portaviones
@@ -210,7 +217,6 @@ def ship_pos_screen(nombre_pantalla): #pantalla donde se posicionan los barcos, 
 				if botones[1].collidepoint(pg.mouse.get_pos()): #si hay click en el lancha
 					print("lancha")
 					lenght=1
-
 			except: #si ocurre algun error, no hace nada y continua con el programa
 				pass
 
@@ -234,6 +240,11 @@ def ship_pos_screen(nombre_pantalla): #pantalla donde se posicionan los barcos, 
 			except KeyError: #cuando se da click al area de un rectangulo de boton que ya no existe (que ya se ha usado), mostraba este error.
 				pass #cuando ocurra el error, no hace nada y sigue con las instrucciones
 
+		if bt.nextb_rect.collidepoint(pg.mouse.get_pos()): #si el mouse está dentro de las coordenadas de bt.start_rect
+			screen.blit(bt.nextb_hover, [620, 500]) #se muestra el texto de color negro en las coordenadas [400,300]
+		else:
+			screen.blit(bt.nextb, [620, 500])
+
 		pg.display.flip()
 
 	pg.quit()
@@ -245,6 +256,7 @@ def game_screen (): #pantalla de juego
 	attempts1 = 0 #almcenar el numero de intentos que le toma ganar al jugador 2
 	score2 = 0 #almacenar el puntaje del jugador1
 	attempts2 = 0 #almacenar el numero de intentos que le toma ganar al jugador 1
+	turno = 1 #variable flag: cuando turno=1, solo el jugador 1 puede jugar, y cuando turno=2, solo el jugador puede jugar
 
 	player1 = ship_pos_screen("JUGADOR 1: POSICIONE SUS BARCOS") #pantalla para que el jugador 1 posicione sus barcos, se almacena la informacion de la ubicacion de los barcos en la variable
 	player2 = ship_pos_screen("JUGADOR 2: POSICIONE SUS BARCOS") #pantalla para que el jugador 2 posicione sus barcos, se almacena la informacion de la ubicacion de los barcos en la variable
@@ -269,9 +281,6 @@ def game_screen (): #pantalla de juego
 		screen.blit(bt.numeros_str[i], ((i*50 + (125 - bt.numeros_str[i].get_width()/2)),20))
 		screen.blit(bt.numeros_str[i], ((70 - bt.numeros_str[i].get_width()/2) ,(i*50 + ((73 - bt.numeros_str[i].get_height()/2)))))
 
-	screen.blit(bt.jugador1, (100,600))
-	screen.blit(bt.jugador2, (800,600))
-
 	# ----- CUADRICULA JUGADOR 2 -----
 
 	pg.draw.rect(screen, (0,0,0), [798,48,502,502]) 
@@ -288,35 +297,51 @@ def game_screen (): #pantalla de juego
 	def disparo_player_1 (board, indice_caja): #funcion que se ejecuta cuando se da click a una casilla (cuando se dispara)
 		nonlocal score1 #para poder modificar el valor del puntaje por fuera de la funcion
 		nonlocal attempts1 #para poder modificar el valor de los intentos por fuera de la funcion
+		nonlocal turno
 
-		caja_select=board.boxes[indice_caja]
-		caja_select.shoot=1 #se accede al atributo shoot de la caja seleccionada y se cambia a 1 para indicar que ha sido disparada (flags)
-		if caja_select.ship==1: #si la caja estaba ocupada por un barco
-			pg.draw.rect(screen, (255,0,0), [caja_select.cxy[0],caja_select.cxy[1],48,48]) #se dibuja un cuadro rojo
-			score1+=1 #se suma 1 punto al jugador
-			attempts1+=1 #se suma 1 al total de intentos del jugador
-		else: #si la caja no estaba ocupada por un barco
-			pg.draw.rect(screen, (255,255,255), [caja_select.cxy[0],caja_select.cxy[1],48,48]) #se dibuja un cuadro blanco
-			attempts1+=1 #se suma 1 al total de intentos del jugador
+		if turno == 2:
+			caja_select=board.boxes[indice_caja]
+			caja_select.shoot=1 #se accede al atributo shoot de la caja seleccionada y se cambia a 1 para indicar que ha sido disparada (flags)
+			if caja_select.ship==1: #si la caja estaba ocupada por un barco
+				pg.draw.rect(screen, (255,0,0), [caja_select.cxy[0],caja_select.cxy[1],48,48]) #se dibuja un cuadro rojo
+				score1+=1 #se suma 1 punto al jugador
+				attempts1+=1 #se suma 1 al total de intentos del jugador
+			else: #si la caja no estaba ocupada por un barco
+				pg.draw.rect(screen, (255,255,255), [caja_select.cxy[0],caja_select.cxy[1],48,48]) #se dibuja un cuadro blanco
+				attempts1+=1 #se suma 1 al total de intentos del jugador
+			caja_select.rect = pg.Rect(0,0,0,0) #se elimina el rectangulo que hace que el boton sea funcional para que el jugador no pueda disparar mas de una vez en cada casilla
+			turno = 1
 
 	def disparo_player_2 (board, indice_caja): #misma funcion que disparo_player_1, pero se cambian los contadores que se modifican dentro de la funcion
 		nonlocal score2
 		nonlocal attempts2
+		nonlocal turno
 
-		caja_select=board.boxes[indice_caja]
-		caja_select.shoot=1
-		if caja_select.ship==1:
-			pg.draw.rect(screen, (255,0,0), [caja_select.cxy[0],caja_select.cxy[1],48,48])
-			score2+=1
-			attempts2+=1
-		else:
-			pg.draw.rect(screen, (255,255,255), [caja_select.cxy[0],caja_select.cxy[1],48,48])
-			attempts2+=1
+		if turno == 1:
+			caja_select=board.boxes[indice_caja]
+			caja_select.shoot=1
+			if caja_select.ship==1:
+				pg.draw.rect(screen, (255,0,0), [caja_select.cxy[0],caja_select.cxy[1],48,48])
+				score2+=1
+				attempts2+=1
+			else:
+				pg.draw.rect(screen, (255,255,255), [caja_select.cxy[0],caja_select.cxy[1],48,48])
+				attempts2+=1
+			caja_select.rect = pg.Rect(0,0,0,0)
+			turno = 2
 
 	while True: #ciclo principal de ejecucion
 		event = pg.event.poll()
 		if event.type == pg.QUIT:
 			break
+
+		if turno == 1:
+			screen.blit(bt.jugador1, (800,600))
+			pg.draw.rect(screen, (0,0,255), [100,600,bt.jugador2.get_width(), bt.jugador2.get_height()])
+
+		elif turno == 2:
+			screen.blit(bt.jugador2, (100,600))
+			pg.draw.rect(screen, (0,0,255), [800,600,bt.jugador1.get_width(), bt.jugador1.get_height()])
 
 		if score1<15: #si el puntaje es menor a 15 (el jugador aun no ha ganado)
 			for i in player1.boxes: #se crean los eventos que ejecutan disparo_player_1()
@@ -342,4 +367,4 @@ def game_screen (): #pantalla de juego
 #winner_screen()    #para probar la pantalla de ganador
 #loser_screen()     #para probar la pantalla de perdedor
 #ship_pos_screen()  #para probar la pantalla de posicionamiento de barcos
-#game_screen()		#para probar la pantalla de juego
+game_screen()		#para probar la pantalla de juego

@@ -60,12 +60,17 @@ crucero_rect = pg.Rect(430,600, crucero.get_width(), (crucero.get_height() + dos
 lancha= pg.image.load("lancha.png").convert()
 lancha_rect = pg.Rect(560,600, lancha.get_width(), (lancha.get_height() + uno.get_height()))
 
-
 # DICCIONARIO PARA LOS BOTONES
 dic_buttons={5:portaviones_rect, 4:buque_rect, 3:submarino_rect, 2:crucero_rect, 1:lancha_rect}
 
 # TEXTO PARA PANTALLA DE JUEGO
-jugador1 = boards_font.render("Tablero jugador 1", True, (255,255,255))
-jugador2 = boards_font.render("Tablero jugador 2", True, (255,255,255))
+jugador1 = boards_font.render("Jugador 1: dispare", True, (255,255,255))
+jugador2 = boards_font.render("Jugador 2: dispare", True, (255,255,255))
+
+# BOTON NEXT PARA PANTALLA DE POSICIONAMIENT0
+nextb = ships_font.render("next", True, (255,255,255))
+nextb_hover = ships_font.render("next", True, (255,0,0))
+
+nextb_rect = pg.Rect(620, 500, nextb.get_width(), nextb.get_height())
 
 pg.quit()
