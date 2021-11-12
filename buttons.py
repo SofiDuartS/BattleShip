@@ -11,18 +11,13 @@ boards_font = pg.font.Font("SKCuber-Expanded.ttf", 30) #fuente para indicadores 
 
 #-----------------BOTON START INICIO------------------------
 start = buttons_font.render("START", True, (255,255,255)) #se crea el texto para el boton de inicio, ("texto", suavizado_de_texto, color_rgb)
-start_hover = buttons_font.render("START", True, (0, 0, 0)) #se crea el texto para cuando el cursor está encima
+start_hover = buttons_font.render("START", True, (0, 0, 255)) #se crea el texto para cuando el cursor está encima
 start_rect = pg.Rect(400, 300, start.get_width(), start.get_height()) #se crea la zona del boton para poder presionarlo
-
-#-----------------BOTON PLAY-------------------------------
-play = buttons_font.render("PLAY", True, (255,255,255))
-play_hover = buttons_font.render("PLAY", True, (0,0,0))
-play_rect = pg.Rect(100, 450, play.get_width(), play.get_height())
 
 #-----------------BOTON QUIT-----------------------------------
 quit = buttons_font.render("QUIT", True, (255,255,255))
-quit_hover = buttons_font.render("QUIT", True, (0,0,0))
-quit_rect = pg.Rect(420, 450, quit.get_width(), quit.get_height())
+quit_hover = buttons_font.render("QUIT", True, (0,0,255))
+quit_rect = pg.Rect(260, 450, quit.get_width(), quit.get_height())
 
 #-----------------BOTONES BARCOS-------------------------------
 
@@ -70,7 +65,10 @@ jugador2 = boards_font.render("Jugador 2: dispare", True, (255,255,255))
 # BOTON NEXT PARA PANTALLA DE POSICIONAMIENT0
 nextb = ships_font.render("next", True, (255,255,255))
 nextb_hover = ships_font.render("next", True, (255,0,0))
-
 nextb_rect = pg.Rect(620, 500, nextb.get_width(), nextb.get_height())
+
+nextb_inst = buttons_font.render("next", True, (255,255,255))
+nextb_hover_inst = buttons_font.render("next", True, (0,0,255))
+nextb_rect_inst = pg.Rect(1150, 600, nextb_inst.get_width(), nextb_inst.get_height())
 
 pg.quit()

@@ -16,7 +16,7 @@ def start_screen(): #pantalla de inicio
 
 		if event.type == pg.MOUSEBUTTONDOWN and event.button == 1: #si hay un click en la pantalla
 			if bt.start_rect.collidepoint(pg.mouse.get_pos()): #si el click esta dentro del area del boton
-				print("click") #solo para probar si funciona el boton
+				break #para que se cierre la pantalla de inicio
 
 		screen.blit(background, [0, 0]) #se muestra la imagen de fondo desde las coordenadas [0,0]
 
@@ -30,48 +30,10 @@ def start_screen(): #pantalla de inicio
 
 	pg.quit()
 
-def winner_screen(): #pantalla de fin del juego (ganador)
-
+def instructions():#pantalla con las instrucciones del juego
 	pg.init()
-
-	screen = pg.display.set_mode((700,700)) #pantalla de 700*700 px
-	background = pg.image.load("winner.png").convert() #se crea la imagen de fondo para la pantalla
-
-	while True:
-		event = pg.event.poll()
-		if event.type == pg.QUIT:
-			break
-
-		if event.type == pg.MOUSEBUTTONDOWN and event.button == 1: #si hay un click en la pantalla
-			if bt.play_rect.collidepoint(pg.mouse.get_pos()): #si el click esta dentro del area del boton PLAY
-				start_screen() #se dirige a la pagina de inicio
-				break #cuando se termine de ejecutar la pantalla de inicio, se rompe el ciclo para que se termine el programa
-			if bt.quit_rect.collidepoint(pg.mouse.get_pos()): #si el click esta dentro del area del boton QUIT
-				break #sale del ciclo y cierra el programa
-
-		screen.blit(background, [0, 0]) #se muestra la imagen de fondo desde las coordenadas [0,0]
-
-		if bt.play_rect.collidepoint(pg.mouse.get_pos()): #si el mouse está dentro de las coordenadas del boton PLAY
-			screen.blit(bt.play_hover, [100, 450]) #se muestra el texto de color negro en las coordenadas [100,450]
-		else:
-			screen.blit(bt.play, [100, 450]) #se muestra el texto de color blanco en las coordenadas [100,450]
-
-		if bt.quit_rect.collidepoint(pg.mouse.get_pos()): #si el mouse está dentro de las coordenadas del boton QUIT
-			screen.blit(bt.quit_hover, [420, 450]) #se muestra el texto de color negro en las coordenadas [420,450]
-		else:
-			screen.blit(bt.quit, [420, 450]) #se muestra el texto de color blanco en las coordenadas [420,450]
-
-
-		pg.display.flip() #se actualiza
-
-	pg.quit()
-
-def loser_screen(): #pantalla de fin del juego (perdedor)
-	#mismo codigo que winner_screen(), pero con diferente fondo de pantalla
-	pg.init()
-
-	screen = pg.display.set_mode((700,700))
-	background = pg.image.load("loser.png").convert()
+	screen = pg.display.set_mode((1400,700))
+	background = pg.image.load("instrucciones.png").convert() #la imagen tiene todas las instrucciones del juego
 
 	while True:
 		event = pg.event.poll()
@@ -79,26 +41,49 @@ def loser_screen(): #pantalla de fin del juego (perdedor)
 			break
 
 		if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
-			if bt.play_rect.collidepoint(pg.mouse.get_pos()):
-				start_screen()
-				break
-			if bt.quit_rect.collidepoint(pg.mouse.get_pos()):
+			if bt.nextb_rect_inst.collidepoint(pg.mouse.get_pos()): #con el boton next se cambia cierra la funcion
 				break
 
-		screen.blit(background, [0, 0])
+		screen.blit(background, [0,0]) #se muestra la imagen con las instrucciones
 
-		if bt.play_rect.collidepoint(pg.mouse.get_pos()):
-			screen.blit(bt.play_hover, [100, 450])
+		if bt.nextb_rect_inst.collidepoint(pg.mouse.get_pos()): #si el mouse está dentro de las coordenadas de bt.start_rect
+			screen.blit(bt.nextb_hover_inst, [1150, 600]) #se muestra el texto de color azul en las coordenadas [1150,600]
 		else:
-			screen.blit(bt.play, [100, 450])
-
-		if bt.quit_rect.collidepoint(pg.mouse.get_pos()):
-			screen.blit(bt.quit_hover, [420, 450])
-		else:
-			screen.blit(bt.quit, [420, 450])
-
+			screen.blit(bt.nextb_inst, [1150, 600])	#se muestra el mismo texto, pero de color blanco
 
 		pg.display.flip()
+
+	pg.quit()
+
+def winner_screen(winner): #pantalla de ganador, recibe como parametro el numero del jugador que gana la partida
+
+	pg.init()
+
+	screen = pg.display.set_mode((700,700)) #pantalla de 700*700 px
+	if winner == 1: #si gana el jugador 1
+		background = pg.image.load("winner1.png").convert() #el fondo de pantalla muestra que gana jugador 1
+	else: #si gana el jugador 2
+		background = pg.image.load("winner2.png").convert() #el fondo de pantalla muestra que gana jugador 1
+
+	while True:
+		event = pg.event.poll()
+		if event.type == pg.QUIT:
+			break
+
+		if event.type == pg.MOUSEBUTTONDOWN and event.button == 1: #si hay un click en la pantalla
+			if bt.quit_rect.collidepoint(pg.mouse.get_pos()): #si el click esta dentro del area del boton QUIT
+				break #sale del ciclo y cierra el programa
+
+		screen.blit(background, [0, 0]) #se muestra la imagen de fondo desde las coordenadas [0,0]
+
+
+		if bt.quit_rect.collidepoint(pg.mouse.get_pos()): #si el mouse está dentro de las coordenadas del boton QUIT
+			screen.blit(bt.quit_hover, [260, 450]) #se muestra el texto de color negro en las coordenadas [420,450]
+		else:
+			screen.blit(bt.quit, [260, 450]) #se muestra el texto de color blanco en las coordenadas [420,450]
+
+
+		pg.display.flip() #se actualiza
 
 	pg.quit()
 
@@ -250,16 +235,13 @@ def ship_pos_screen(nombre_pantalla): #pantalla donde se posicionan los barcos, 
 	pg.quit()
 	return board #para poder guardar los estados de los cuadros de la cuadricula, que almacenan la posicion de los barcos de un jugador, dentro de una variable en la funcion de pantalla principal de juego
 
-def game_screen (): #pantalla de juego
+def game_screen (player1, player2): #pantalla de juego
 	
 	score1 = 0 #almacenar el puntaje del jugador2
 	attempts1 = 0 #almcenar el numero de intentos que le toma ganar al jugador 2
 	score2 = 0 #almacenar el puntaje del jugador1
 	attempts2 = 0 #almacenar el numero de intentos que le toma ganar al jugador 1
 	turno = 1 #variable flag: cuando turno=1, solo el jugador 1 puede jugar, y cuando turno=2, solo el jugador puede jugar
-
-	player1 = ship_pos_screen("JUGADOR 1: POSICIONE SUS BARCOS") #pantalla para que el jugador 1 posicione sus barcos, se almacena la informacion de la ubicacion de los barcos en la variable
-	player2 = ship_pos_screen("JUGADOR 2: POSICIONE SUS BARCOS") #pantalla para que el jugador 2 posicione sus barcos, se almacena la informacion de la ubicacion de los barcos en la variable
 
 	player2.move_player2() #para que se puedan mostrar los dos tableros de juego simultaneamente, mirar funcionamiento en ships.py, clase Board
 
@@ -349,6 +331,7 @@ def game_screen (): #pantalla de juego
 
 		elif score1==15: #si el puntaje es 15 (el jugador gana el juego)
 			print("El jugador 2 ha ganado en {0} intentos".format(attempts1))
+			winner = 2
 			break #se rompe el ciclo
 
 		if score2<15: #si el puntaje es menor a 15 (el jugador aun no ha ganado)
@@ -357,14 +340,16 @@ def game_screen (): #pantalla de juego
 
 		elif score2==15: #si el puntaje es 15 (el jugador gana el juego)
 			print("El jugador 1 ha ganado en {0} intentos".format(attempts2))
+			winner = 1
 			break #se rompe el ciclo
 
 		pg.display.flip()
 
 	pg.quit()
+	return winner
 
 #start_screen()     #para probar la pantalla de inicio
-#winner_screen()    #para probar la pantalla de ganador
-#loser_screen()     #para probar la pantalla de perdedor
+#winner_screen(2)    #para probar la pantalla de ganador
 #ship_pos_screen()  #para probar la pantalla de posicionamiento de barcos
-game_screen()		#para probar la pantalla de juego
+#game_screen()		#para probar la pantalla de juego
+#instructions()
